@@ -8,7 +8,6 @@ else
   SCRIPT_DIR="$(pwd)"
 fi
 INSTALL_DIR="${INSTALL_DIR:-/opt/tg-monitor}"
-ENV_TEMPLATE="$SCRIPT_DIR/.env.example"
 TARGET_ENV="$INSTALL_DIR/.env"
 CRON_TAG="# tg-monitor"
 
@@ -33,6 +32,7 @@ if [[ ! -f "$SCRIPT_DIR/scripts/monitor.sh" || ! -f "$SCRIPT_DIR/scripts/bot_con
   SCRIPT_DIR="$TMP_DIR"
 fi
 
+ENV_TEMPLATE="$SCRIPT_DIR/.env.example"
 if [[ ! -f "$ENV_TEMPLATE" ]]; then
   echo "Missing .env.example" >&2
   exit 1
