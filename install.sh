@@ -46,6 +46,10 @@ fi
 sudo mkdir -p "$INSTALL_DIR"
 sudo cp -r "$SCRIPT_DIR/scripts" "$INSTALL_DIR/"
 sudo cp "$ENV_TEMPLATE" "$INSTALL_DIR/.env.example"
+if [[ -f "$SCRIPT_DIR/uninstall.sh" ]]; then
+  sudo cp "$SCRIPT_DIR/uninstall.sh" "$INSTALL_DIR/uninstall.sh"
+  sudo chmod +x "$INSTALL_DIR/uninstall.sh"
+fi
 
 if [[ ! -f "$TARGET_ENV" ]]; then
   sudo cp "$ENV_TEMPLATE" "$TARGET_ENV"
@@ -65,6 +69,13 @@ clean_cron="$(printf '%s\n' "$current_cron" | grep -v "$CRON_TAG" || true)"
 
 monitor_line="* * * * * ENV_FILE=$TARGET_ENV $INSTALL_DIR/scripts/monitor.sh >/dev/null 2>&1 $CRON_TAG"
 bot_line="* * * * * ENV_FILE=$TARGET_ENV $INSTALL_DIR/scripts/bot_control.sh >/dev/null 2>&1 $CRON_TAG"
+
+if printf '%s\n' "$current_cron" | grep -Fq "$monitor_line"; then
+  monitor_line=""
+fi
+if printf '%s\n' "$current_cron" | grep -Fq "$bot_line"; then
+  bot_line=""
+fi
 
 printf '%s\n%s\n%s\n' "$clean_cron" "$monitor_line" "$bot_line" | $CRONTAB_CMD -
 

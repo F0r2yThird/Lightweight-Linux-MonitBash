@@ -89,7 +89,7 @@ ENV_FILE=/opt/tg-monitor/.env /opt/tg-monitor/scripts/monitor.sh
 ./uninstall.sh
 ```
 
-Скрипт удаляет только cron-записи. Файлы проекта остаются в `/opt/tg-monitor`.
+Скрипт удаляет cron-записи и полностью удаляет `/opt/tg-monitor`.
 
 ## Примечания
 

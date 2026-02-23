@@ -16,5 +16,7 @@ printf '%s\n' "$clean_cron" | $CRONTAB_CMD -
 
 echo "Removed tg-monitor cron entries."
 
-echo "Project files kept in $INSTALL_DIR"
-echo "To remove files manually: sudo rm -rf $INSTALL_DIR"
+if [[ -d "$INSTALL_DIR" ]]; then
+  sudo rm -rf "$INSTALL_DIR"
+  echo "Removed $INSTALL_DIR"
+fi

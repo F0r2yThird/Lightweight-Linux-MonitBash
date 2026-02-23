@@ -89,7 +89,7 @@ ENV_FILE=/opt/tg-monitor/.env /opt/tg-monitor/scripts/monitor.sh
 ./uninstall.sh
 ```
 
-This removes cron entries only. Project files remain in `/opt/tg-monitor`.
+This removes cron entries and deletes `/opt/tg-monitor`.
 
 ## Notes
 
