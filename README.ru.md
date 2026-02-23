@@ -50,6 +50,7 @@ LOCK_FILE=/var/tmp/tg_monitor.lock
 ```bash
 git clone https://github.com/F0r2yThird/Lightweight-Linux-MonitBash.git tg-monitor
 cd tg-monitor
+chmod +x install.sh uninstall.sh scripts/monitor.sh scripts/bot_control.sh
 ./install.sh
 ```
 
