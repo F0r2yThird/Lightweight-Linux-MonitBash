@@ -1,106 +1,97 @@
-# Lightweight Linux Monitoring for AmneziaVPN Host
+# TG Linux Monitor
 
-Минимальный мониторинг для Ubuntu 24 с отправкой алертов в Telegram и очень низкой нагрузкой на сервер (1 GB RAM).
+[Русская версия](README.ru.md)
 
-## Что мониторится
+Lightweight Linux monitoring with Telegram alerts. Designed for low-resource servers (for example, 1 GB RAM).
 
-- `CPU` (алерт при `> 90%`)
-- `RAM` (алерт при `> 90%`)
-- Неуспешные попытки входа под `root` за последние 5 минут (алерт при `>= 5`)
+## Features
 
-Проверка выполняется раз в минуту.
+- CPU usage alert (`CPU_THRESHOLD`)
+- RAM usage alert (`RAM_THRESHOLD`)
+- Failed auth attempts per user in a rolling window (`ROOT_FAIL_THRESHOLD` in `ROOT_WINDOW_MINUTES`)
+- Success login alert for each new SSH login event (with user, time, source IP)
+- Telegram bot controls:
+  - `/on`
+  - `/off`
+  - `/status`
+  - `/thresholds`
+- Single state file (rewritten, no DB)
 
-## Поведение алертов
+## Configuration
 
-- Тип алерта: `info`
-- Антиспам: повтор по той же метрике только после возврата в норму и нового превышения
-- Recovery-алерты (о восстановлении) не отправляются
-
-## Управление из Telegram
-
-Поддерживаются команды:
-
-- `/on` - включить отправку алертов
-- `/off` - выключить отправку алертов
-- `/status` - текущий статус (включен/выключен, последние метрики, пороги)
-
-Важно: включение/выключение реализовано безопасно через флаг в файле состояния, без редактирования `crontab`.
-
-## Структура
-
-- `scripts/monitor.sh` - сбор метрик и отправка алертов
-- `scripts/bot_control.sh` - обработка Telegram-команд
-- `.env` - конфигурация
-- `STATE_FILE` (по умолчанию `/var/tmp/tg_monitor_state.env`) - один перезаписываемый файл состояния
-
-`STATE_FILE` всегда перезаписывается и не растет, поэтому не занимает место на диске со временем.
-
-## Установка
-
-1. Скопировать шаблон:
+Copy template and edit values:
 
 ```bash
 cp .env.example .env
 ```
 
-2. Заполнить `.env`:
+Main variables:
 
 ```env
 BOT_TOKEN=...
 CHAT_ID=...
+AUTH_USERS=root,cloud_2x96c19
 CPU_THRESHOLD=90
 RAM_THRESHOLD=90
 ROOT_FAIL_THRESHOLD=5
 ROOT_WINDOW_MINUTES=5
+SUCCESS_WINDOW_MINUTES=30
+TIMEZONE=UTC+3
 STATE_FILE=/var/tmp/tg_monitor_state.env
 LOCK_FILE=/var/tmp/tg_monitor.lock
 ```
 
-3. Убедиться, что есть зависимости:
+`AUTH_USERS` is a comma-separated list. You can change users any time without editing scripts.
+
+## Install
+
+### Safe mode (recommended)
 
 ```bash
-sudo apt update
-sudo apt install -y curl python3
+git clone <your-repo-url> tg-monitor
+cd tg-monitor
+./install.sh
 ```
 
-4. Дать права на запуск (если нужно):
+### One-liner install
 
 ```bash
-chmod +x scripts/monitor.sh scripts/bot_control.sh
+curl -fsSL <raw-install-sh-url> | bash
 ```
 
-## Cron (рекомендуется от `root`)
+After install:
 
-Пример ниже использует каталог `/opt/tg-monitor`. Если у тебя другой путь, замени его в обеих строках.
-
-Открыть cron:
-
-```bash
-sudo crontab -e
-```
-
-Добавить:
-
-```cron
-* * * * * ENV_FILE=/opt/tg-monitor/.env /opt/tg-monitor/scripts/monitor.sh >/dev/null 2>&1
-* * * * * ENV_FILE=/opt/tg-monitor/.env /opt/tg-monitor/scripts/bot_control.sh >/dev/null 2>&1
-```
-
-## Ручная проверка
+1. Edit `/opt/tg-monitor/.env`
+2. Set `BOT_TOKEN`, `CHAT_ID`, `AUTH_USERS`
+3. Test manually:
 
 ```bash
 ENV_FILE=/opt/tg-monitor/.env /opt/tg-monitor/scripts/monitor.sh
-ENV_FILE=/opt/tg-monitor/.env /opt/tg-monitor/scripts/bot_control.sh
 ```
 
-Потом отправь боту:
+## Cron jobs
 
-- `/status`
-- `/off`
-- `/on`
+`install.sh` adds two cron entries (tagged with `# tg-monitor`):
 
-## Примечания
+- monitor runner every minute
+- bot command polling every minute
 
-- Для подсчета `Failed password for root` сначала используется `journalctl` за последние 5 минут.
-- Если `journalctl` недоступен, используется fallback на `/var/log/auth.log` за то же окно.
-- Скрипты используют атомарный lock через `mkdir`, чтобы избежать гонок при одновременном запуске.
+## Telegram commands
+
+- `/status` - current values and statuses (`✅` / `🆘`)
+- `/thresholds` - configured thresholds
+- `/off` - disable alert sending
+- `/on` - enable alert sending
+
+## Uninstall
+
+```bash
+./uninstall.sh
+```
+
+This removes cron entries only. Project files remain in `/opt/tg-monitor`.
+
+## Notes
+
+- Data source is `journalctl` first, `/var/log/auth.log` as fallback.
+- Time in alerts is formatted using `TIMEZONE` (`UTC+N` / `UTC-N`).
