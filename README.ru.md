@@ -48,7 +48,7 @@ LOCK_FILE=/var/tmp/tg_monitor.lock
 ### Безопасный вариант (рекомендуется)
 
 ```bash
-git clone <your-repo-url> tg-monitor
+git clone https://github.com/F0r2yThird/Lightweight-Linux-MonitBash.git tg-monitor
 cd tg-monitor
 ./install.sh
 ```
@@ -56,7 +56,7 @@ cd tg-monitor
 ### Установка одной командой
 
 ```bash
-curl -fsSL <raw-install-sh-url> | bash
+curl -fsSL https://raw.githubusercontent.com/F0r2yThird/Lightweight-Linux-MonitBash/main/install.sh | bash
 ```
 
 После установки:
