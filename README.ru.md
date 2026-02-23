@@ -19,12 +19,6 @@
 
 ## Конфигурация
 
-Скопировать шаблон и заполнить значения:
-
-```bash
-cp .env.example .env
-```
-
 Основные переменные:
 
 ```env
@@ -36,7 +30,7 @@ RAM_THRESHOLD=90
 ROOT_FAIL_THRESHOLD=5
 ROOT_WINDOW_MINUTES=5
 SUCCESS_WINDOW_MINUTES=30
-TIMEZONE=UTC+3
+TIMEZONE=UTC+0
 STATE_FILE=/var/tmp/tg_monitor_state.env
 LOCK_FILE=/var/tmp/tg_monitor.lock
 ```
