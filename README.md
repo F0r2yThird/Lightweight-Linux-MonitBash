@@ -1,4 +1,4 @@
-# TG Linux Monitor
+# Lightweight Linux Monitoring Bash --> Telegram
 
 [Русская версия](README.ru.md)
 
