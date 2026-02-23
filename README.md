@@ -56,7 +56,7 @@ cd tg-monitor
 ### One-liner install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/F0r2yThird/Lightweight-Linux-MonitBash/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/F0r2yThird/Lightweight-Linux-MonitBash/master/install.sh | bash
 ```
 
 After install:

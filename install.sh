@@ -1,15 +1,36 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_SOURCE="${BASH_SOURCE[0]:-}"
+if [[ -n "$SCRIPT_SOURCE" ]]; then
+  SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_SOURCE")" && pwd)"
+else
+  SCRIPT_DIR="$(pwd)"
+fi
 INSTALL_DIR="${INSTALL_DIR:-/opt/tg-monitor}"
 ENV_TEMPLATE="$SCRIPT_DIR/.env.example"
 TARGET_ENV="$INSTALL_DIR/.env"
 CRON_TAG="# tg-monitor"
 
 if [[ ! -f "$SCRIPT_DIR/scripts/monitor.sh" || ! -f "$SCRIPT_DIR/scripts/bot_control.sh" ]]; then
-  echo "Run install.sh from the project repository." >&2
-  exit 1
+  REPO_URL="${REPO_URL:-https://github.com/F0r2yThird/Lightweight-Linux-MonitBash.git}"
+  TMP_DIR="$(mktemp -d /tmp/tg-monitor.XXXXXX)"
+  if [[ "${KEEP_TMP:-0}" != "1" ]]; then
+    trap 'rm -rf "$TMP_DIR"' EXIT
+  fi
+
+  if ! command -v git >/dev/null 2>&1; then
+    if command -v apt-get >/dev/null 2>&1; then
+      sudo apt-get update -y >/dev/null
+      sudo apt-get install -y git >/dev/null
+    else
+      echo "git is required for one-liner install." >&2
+      exit 1
+    fi
+  fi
+
+  git clone "$REPO_URL" "$TMP_DIR" >/dev/null 2>&1
+  SCRIPT_DIR="$TMP_DIR"
 fi
 
 if [[ ! -f "$ENV_TEMPLATE" ]]; then
