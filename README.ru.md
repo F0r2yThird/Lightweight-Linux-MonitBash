@@ -1,4 +1,4 @@
-# Lightweight Linux Monitoring Bash --> Telegram
+# Легковесный мониторинг Linux на Bash --> Telegram
 
 [English version](README.md)
 
